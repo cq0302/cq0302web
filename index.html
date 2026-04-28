@@ -1,0 +1,301 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>上城区政协委员通 · 2026</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:#F5F7FA;color:#333;font-size:14px}
+.banner{background:linear-gradient(135deg,#1F4E79 0%,#0D3A5E 60%,#8B1A1A 100%);color:#fff;position:relative;overflow:hidden}
+.banner::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat}
+.banner-inner{position:relative;z-index:1;padding:36px 48px 28px}
+.banner-eyebrow{font-size:12px;letter-spacing:3px;color:rgba(255,255,255,0.6);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.banner-eyebrow::before{content:'';display:block;width:24px;height:2px;background:#C00000}
+.banner h1{font-size:28px;font-weight:700;letter-spacing:2px;margin-bottom:6px}
+.banner h1 span{color:#E8C87A}
+.banner-sub{font-size:13px;color:rgba(255,255,255,0.75);letter-spacing:1px}
+.banner-divider{height:3px;background:linear-gradient(90deg,#C00000 0%,#E8C87A 40%,#1F4E79 100%)}
+.stats-bar{display:flex;gap:0;margin:-24px 48px 28px;position:relative;z-index:2}
+.stat-card{flex:1;background:#fff;padding:18px 20px 14px;border-top:4px solid;margin-right:12px;border-radius:6px;box-shadow:0 2px 12px rgba(0,0,0,.08);position:relative;overflow:hidden}
+.stat-card:last-child{margin-right:0}
+.stat-card.red{border-color:#C00000}.stat-card.blue{border-color:#1F4E79}.stat-card.gold{border-color:#B8860B}.stat-card.green{border-color:#1A6B3A}
+.stat-num{font-size:32px;font-weight:800;line-height:1;background:linear-gradient(135deg,#1F4E79,#2E6DA4);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-card.red .stat-num{background:linear-gradient(135deg,#C00000,#E53935);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-card.gold .stat-num{background:linear-gradient(135deg,#B8860B,#E8C87A);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-card.green .stat-num{background:linear-gradient(135deg,#1A6B3A,#43A047);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:12px;color:#888;margin-top:4px;letter-spacing:1px}
+.stat-icon{position:absolute;right:14px;top:14px;font-size:28px;opacity:.12}
+.nav-tabs{display:flex;background:#fff;margin:0 48px;border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,.06);overflow:hidden}
+.nav-tab{flex:1;padding:14px 12px;text-align:center;cursor:pointer;font-size:14px;font-weight:600;color:#666;border-bottom:3px solid transparent;transition:all .2s;letter-spacing:1px}
+.nav-tab:hover{color:#1F4E79;background:#F0F6FF}
+.nav-tab.active{color:#C00000;border-color:#C00000;background:#FFF5F5}
+.tab-num{display:inline-block;background:#1F4E79;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;margin-left:4px;font-weight:700}
+.nav-tab.active .tab-num{background:#C00000}
+.main{margin:24px 48px 48px}
+.mod{background:#fff;border-radius:8px;box-shadow:0 1px 8px rgba(0,0,0,.06);overflow:hidden;margin-bottom:24px}
+.mod-hd{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #EEF2F7}
+.mod-title{font-size:15px;font-weight:700;color:#1F4E79;display:flex;align-items:center;gap:8px}
+.mod-title::before{content:'';display:block;width:4px;height:18px;background:#C00000;border-radius:2px}
+.mod-badge{background:#C00000;color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600}
+.mod-bd{padding:20px}
+.search-bar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.search-bar input,.search-bar select{height:36px;padding:0 12px;border:1px solid #DDE4EE;border-radius:6px;font-size:13px;color:#333;outline:none;font-family:inherit}
+.search-bar input:focus,.search-bar select:focus{border-color:#1F4E79;box-shadow:0 0 0 2px rgba(31,78,121,.12)}
+.search-bar input{flex:1;min-width:160px}
+.search-bar select{min-width:130px;cursor:pointer;background:#fff}
+.btn{height:36px;padding:0 16px;border-radius:6px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-primary{background:#1F4E79;color:#fff}.btn-primary:hover{background:#163F66}
+.btn-outline{background:#fff;color:#1F4E79;border:1px solid #1F4E79}.btn-outline:hover{background:#F0F6FF}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:#1F4E79;color:#fff;padding:10px 14px;text-align:center;font-weight:600;white-space:nowrap}
+tbody tr:nth-child(even){background:#F8FAFC}
+tbody tr:hover{background:#EEF5FF}
+tbody td{padding:9px 14px;border-bottom:1px solid #EEF2F7;vertical-align:middle}
+tbody td:first-child{text-align:center;color:#888;font-size:12px}
+.party-tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:600;background:#E8F0FB;color:#1F4E79}
+.party-tag.zhonggong{background:#FDECEA;color:#C00000}
+.party-tag.minjin{background:#FFF3E0;color:#E65100}
+.party-tag.mingong{background:#E8F5E9;color:#2E7D32}
+.party-tag.tuanjie{background:#F3E5F5;color:#6A1B9A}
+.empty-state{text-align:center;padding:48px 0;color:#999}
+.ws-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.ws-card{border:1px solid #EEF2F7;border-radius:8px;padding:16px;border-left:4px solid #1F4E79;transition:all .2s;background:#fff}
+.ws-card:hover{box-shadow:0 4px 16px rgba(31,78,121,.15);transform:translateY(-2px);border-color:#1F4E79}
+.ws-num{display:inline-block;background:#1F4E79;color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 7px;margin-bottom:6px}
+.ws-name{font-size:13px;font-weight:700;color:#1F4E79;margin-bottom:5px;line-height:1.4}
+.ws-leader{font-size:12px;color:#C00000;margin-bottom:3px}
+.ws-addr{font-size:11px;color:#888;line-height:1.5}
+.timeline{position:relative;padding-left:20px}
+.timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,#C00000,#1F4E79);border-radius:2px}
+.tl-item{position:relative;margin-bottom:20px}
+.tl-item::before{content:'';position:absolute;left:-17px;top:5px;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid #C00000;z-index:1}
+.tl-month{font-size:11px;font-weight:700;color:#C00000;letter-spacing:1px;margin-bottom:4px}
+.tl-bloc{background:#F8FAFC;border:1px solid #EEF2F7;border-radius:6px;padding:10px 14px}
+.tl-bloc-name{font-size:13px;font-weight:600;color:#1F4E79;margin-bottom:2px}
+.tl-type{display:inline-block;background:#E8F0FB;color:#1F4E79;border-radius:10px;padding:1px 7px;font-size:11px;margin-right:6px}
+.tl-bloc-row{margin-bottom:6px}.tl-bloc-row:last-child{margin-bottom:0}
+.street-accord .sa-item{border-bottom:1px solid #EEF2F7}
+.street-accord .sa-item:last-child{border-bottom:none}
+.sa-hd{padding:12px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:600;font-size:13px;color:#1F4E79;transition:background .15s}
+.sa-hd:hover{background:#F0F6FF}
+.sa-hd .sa-arrow{font-size:10px;color:#C00000;transition:transform .2s}
+.sa-item.open .sa-arrow{transform:rotate(180deg)}
+.sa-body{display:none;padding:4px 16px 14px}
+.sa-item.open .sa-body{display:block}
+.sa-topics{list-style:none}
+.sa-topics li{padding:8px 0;border-bottom:1px dashed #EEF2F7;font-size:13px;color:#444;display:flex;gap:8px;align-items:flex-start}
+.sa-topics li:last-child{border-bottom:none}
+.sa-topics li::before{content:'●';color:#C00000;font-size:8px;margin-top:5px;flex-shrink:0}
+.sa-time{color:#888;font-size:11px;margin-left:auto;white-space:nowrap;flex-shrink:0;margin-top:1px}
+.pagination{display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:14px}
+.pagination button{min-width:32px;height:32px;border:1px solid #DDE4EE;border-radius:5px;background:#fff;color:#555;cursor:pointer;font-size:12px;font-family:inherit}
+.pagination button.active{background:#1F4E79;color:#fff;border-color:#1F4E79}
+.pagination button:hover:not(:disabled){background:#F0F6FF;border-color:#1F4E79}
+.pagination button:disabled{opacity:.4;cursor:not-allowed}
+.footer{text-align:center;padding:20px;color:#aaa;font-size:12px;border-top:1px solid #EEF2F7;margin:0 48px}
+.tab-content{display:none}
+.tab-content.active{display:block}
+@media(max-width:900px){
+.banner-inner{padding:24px 20px 18px}
+.stats-bar{margin:-16px 16px 20px;flex-wrap:wrap}
+.stat-card{min-width:calc(50% - 6px);margin-bottom:12px}
+.main{margin:16px;padding-bottom:32px}
+.nav-tabs{margin:0 16px;flex-wrap:wrap}
+.footer{margin:0 16px}
+}
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <div class="banner-inner">
+    <div class="banner-eyebrow">政协杭州市上城区委员会</div>
+    <h1>上城区<span>政协委员通</span> · 2026</h1>
+    <div class="banner-sub">向基层延伸覆盖 &nbsp;|&nbsp; 不建机构建机制 &nbsp;|&nbsp; 一室一品</div>
+  </div>
+  <div class="banner-divider"></div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-card red"><div class="stat-icon">👥</div><div class="stat-num">339</div><div class="stat-label">政协委员总数</div></div>
+  <div class="stat-card blue"><div class="stat-icon">🏛️</div><div class="stat-num">50</div><div class="stat-label">委员工作室</div></div>
+  <div class="stat-card gold"><div class="stat-icon">📋</div><div class="stat-num">34</div><div class="stat-label">界别履职活动</div></div>
+  <div class="stat-card green"><div class="stat-icon">🏘️</div><div class="stat-num">32</div><div class="stat-label">街道议事堂议题</div></div>
+</div>
+
+<div class="nav-tabs">
+  <div class="nav-tab active" data-tab="members">委员名单 <span class="tab-num">339</span></div>
+  <div class="nav-tab" data-tab="studios">委员工作室 <span class="tab-num">50</span></div>
+  <div class="nav-tab" data-tab="plans">界别履职计划</div>
+  <div class="nav-tab" data-tab="venues">民生议事堂</div>
+</div>
+
+<div class="main">
+
+  <div class="tab-content active" id="tab-members">
+    <div class="mod">
+      <div class="mod-hd"><div class="mod-title">委员名单</div><div class="mod-badge">共 339 人</div></div>
+      <div class="mod-bd">
+        <div class="search-bar">
+          <input type="text" id="s-name" placeholder="输入姓名搜索…" oninput="filterMembers()">
+          <select id="s-street" onchange="filterMembers()">
+            <option value="">全部街道</option>
+            <option>政协领导</option><option>湖滨</option><option>清波</option><option>小营</option>
+            <option>望江</option><option>南星</option><option>紫阳</option><option>闸弄口</option>
+            <option>凯旋</option><option>采荷</option><option>四季青</option><option>笕桥</option>
+            <option>彭埠</option><option>九堡</option><option>丁兰</option>
+          </select>
+          <select id="s-party" onchange="filterMembers()">
+            <option value="">全部党派</option>
+            <option>中共</option><option>民建</option><option>民进</option><option>九三学社</option>
+            <option>农工党</option><option>致公党</option><option>无党派</option><option>工商联</option>
+          </select>
+          <button class="btn btn-outline" onclick="clearFilters()">重置</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>街道委员小组</th><th>姓名</th><th>党派</th><th>性别</th><th>现工作单位及职务</th></tr></thead>
+            <tbody id="members-tbody"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="members-empty" style="display:none">未找到符合条件的委员</div>
+        <div class="pagination" id="members-pager"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-studios">
+    <div class="mod">
+      <div class="mod-hd"><div class="mod-title">委员工作室</div><div class="mod-badge">50 个工作室</div></div>
+      <div class="mod-bd"><div class="ws-grid" id="ws-grid"></div></div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-plans">
+    <div class="mod">
+      <div class="mod-hd"><div class="mod-title">界别履职计划</div><div class="mod-badge">2026年度 · 34项活动</div></div>
+      <div class="mod-bd"><div class="timeline" id="timeline"></div></div>
+    </div>
+  </div>
+
+  <div class="tab-content" id="tab-venues">
+    <div class="mod">
+      <div class="mod-hd"><div class="mod-title">民生议事堂</div><div class="mod-badge">2026年度 · 14个街道 · 32个议题</div></div>
+      <div class="mod-bd"><div class="street-accord" id="street-accord"></div></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">政协杭州市上城区委员会 &nbsp;·&nbsp; 2026年度履职数据</div>
+
+<script>
+var DATA={};
+fetch('zx_data.json').then(r=>r.json()).then(d=>{DATA=d;init()});
+function init(){
+  renderMembers(getFiltered());
+  renderStudios();
+  renderPlans();
+  renderVenues();
+}
+document.querySelectorAll('.nav-tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+  });
+});
+var PAGE=1,PER=15;
+function getFiltered(){
+  var n=document.getElementById('s-name').value.trim();
+  var g=document.getElementById('s-street').value;
+  var p=document.getElementById('s-party').value;
+  return DATA.members.filter(function(m){
+    if(n&&!m[2].includes(n))return false;
+    if(g&&m[1]!==g)return false;
+    if(p&&!m[3].includes(p))return false;
+    return true;
+  });
+}
+function partyCls(v){
+  if(!v)return'';
+  if(v==='中共')return'zhonggong';
+  if(v==='民建'||v==='民进')return'minjin';
+  if(v==='工商联'||v==='无党派')return'tuanjie';
+  return'';
+}
+function filterMembers(){
+  PAGE=1;renderMembers(getFiltered());
+}
+function clearFilters(){
+  document.getElementById('s-name').value='';
+  document.getElementById('s-street').value='';
+  document.getElementById('s-party').value='';
+  PAGE=1;renderMembers(getFiltered());
+}
+function renderMembers(list){
+  var start=(PAGE-1)*PER,end=start+PER,page=list.slice(start,end);
+  var tb=document.getElementById('members-tbody');
+  if(!page.length){
+    tb.innerHTML='';
+    document.getElementById('members-empty').style.display='';
+    document.getElementById('members-pager').innerHTML='';
+    return;
+  }
+  document.getElementById('members-empty').style.display='none';
+  tb.innerHTML=page.map(function(m,i){
+    return'<tr><td>'+(start+i+1)+'</td><td>'+m[1]+'</td><td>'+m[2]+'</td><td><span class="party-tag '+partyCls(m[3])+'">'+(m[3]||'')+'</span></td><td>'+(m[4]||'')+'</td><td>'+(m[5]||'')+'</td></tr>';
+  }).join('');
+  var total=Math.ceil(list.length/PER);
+  var pg=document.getElementById('members-pager');
+  if(total<=1){pg.innerHTML='';return;}
+  var html='<button '+(PAGE<=1?'disabled':'onclick="PAGE--;renderMembers(getFiltered())"')+'>上一页</button>';
+  for(var p=1;p<=total;p++){
+    if(p===1||p===total||(p>=PAGE-2&&p<=PAGE+2))
+      html+='<button class="'+(p===PAGE?'active':'')+'" onclick="PAGE='+p+';renderMembers(getFiltered())">'+p+'</button>';
+    else if(p===PAGE-3||p===PAGE+3)html+='<span style="color:#888">…</span>';
+  }
+  html+='<button '+(PAGE>=total?'disabled':'onclick="PAGE++;renderMembers(getFiltered())"')+'>下一页</button>';
+  pg.innerHTML=html;
+}
+function renderStudios(){
+  var g=document.getElementById('ws-grid');
+  g.innerHTML=DATA.studios.map(function(s){
+    return'<div class="ws-card"><span class="ws-num">#'+s[0]+'</span><div class="ws-name">'+s[1]+'</div><div class="ws-leader">领衔：'+s[2]+'</div><div class="ws-addr">'+s[3]+'</div></div>';
+  }).join('');
+}
+function renderPlans(){
+  var tl=document.getElementById('timeline');
+  var months=['1','2','3','4','5','6','7','8','9','10','11','12'];
+  var html='';
+  months.forEach(function(m){
+    var items=DATA.plans.filter(function(p){return p[3].startsWith(m+'月');});
+    if(!items.length)return;
+    html+='<div class="tl-item"><div class="tl-month">'+m+'月</div>';
+    items.forEach(function(p){
+      html+='<div class="tl-bloc"><div class="tl-bloc-row"><span class="tl-type">'+p[2]+'</span><span class="tl-bloc-name">'+p[1]+'</span></div><div class="tl-bloc-meta">'+p[0]+'</div></div>';
+    });
+    html+='</div>';
+  });
+  tl.innerHTML=html;
+}
+function renderVenues(){
+  var sa=document.getElementById('street-accord');
+  var streets={};
+  DATA.venues.forEach(function(v){var k=v[0];if(!streets[k])streets[k]=[];streets[k].push(v);});
+  var html='';
+  Object.keys(streets).forEach(function(k){
+    var items=streets[k];
+    html+='<div class="sa-item" onclick="this.classList.toggle(\'open\')">';
+    html+='<div class="sa-hd">'+k+'<span class="sa-arrow">&#9660;</span></div>';
+    html+='<div class="sa-body"><ul class="sa-topics">';
+    items.forEach(function(v){html+='<li><span>'+v[1]+'</span><span class="sa-time">'+v[2]+'</span></li>';});
+    html+='</ul></div></div>';
+  });
+  sa.innerHTML=html;
+}
+</script>
