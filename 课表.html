@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人课表</title>
+<style>
+/* ── Google Fonts fallback ── */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&display=swap');
+
+/* ── Reset ── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+/* ── 页面切换：欢迎屏 / 课表页 / 作息页 ── */
+.page-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  overflow-y: auto;
+}
+.page-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+.page-overlay.hide {
+  opacity: 0;
+  transform: scale(1.03);
+  pointer-events: none;
+}
+
+/* 课表页 */
+#schedule-page {
+  background: linear-gradient(135deg, #f8b4d9 0%, #e879f9 25%, #a78bfa 55%, #60a5fa 100%);
+  background-attachment: fixed;
+  padding: 36px 16px 60px;
+  position: relative;
+}
+/* 课表页背景动态浮动气泡 */
+#schedule-page::before, #schedule-page::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.45;
+  pointer-events: none;
+  animation: floatBubble 8s ease-in-out infinite alternate;
+}
+#schedule-page::before {
+  width: 420px; height: 420px;
+  background: radial-gradient(circle, #f0abfc, #c084fc);
+  top: -100px; left: -100px;
+}
+#schedule-page::after {
+  width: 360px; height: 360px;
+  background: radial-gradient(circle, #93c5fd, #818cf8);
+  bottom: -80px; right: -80px;
+  animation-delay: -4s;
+}
+#schedule-page .container { max-width: 980px; margin: 0 auto; }
+
+/* 作息页 */
+#routine-page {
+  background: #fff;
+  padding: 36px 16px 60px;
+}
+.routine-container {
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+/* 通用返回按钮 */
+.page-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #8b5cf6;
+  cursor: pointer;
+  margin-bottom: 14px;
+  background: rgba(139,92,246,0.08);
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: none;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+.page-back:hover { background: rgba(139,92,246,0.16); }
+
+/* 课表页内返回按钮用白色风格 */
+#schedule-page .page-back {
+  color: #fff;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(6px);
+}
+#schedule-page .page-back:hover { background: rgba(255,255,255,0.40); }
+
+@keyframes floatBubble {
+  from { transform: translate(0,0) scale(1); }
+  to   { transform: translate(40px,30px) scale(1.08); }
+}
+
+/* ── Body ── */
+body {
+  font-family: "Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Container ── */
+.container { max-width: 980px; margin: 0 auto; }
+
+/* ── Header Banner ── */
+.header-banner {
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 1;
+}
+
+/* 「个人课表」四个字专属粉紫背景卡片 */
+.title-card {
+  display: inline-block;
+  background: linear-gradient(135deg, #f472b6 0%, #c084fc 50%, #818cf8 100%);
+  border-radius: 24px;
+  padding: 18px 52px 16px;
+  box-shadow:
+    0 8px 32px rgba(196,84,252,0.45),
+    0 2px 8px rgba(0,0,0,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.title-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, transparent 60%);
+  pointer-events: none;
+}
+.title-card h1 {
+  font-size: 36px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 6px;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.30), 0 0 30px rgba(255,255,255,0.4);
+  position: relative;
+}
+/* 标题图标闪烁 */
+.title-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 4px;
+  animation: sparkle 2.5s ease-in-out infinite;
+}
+@keyframes sparkle {
+  0%,100%{ transform: scale(1) rotate(0deg); filter: brightness(1); }
+  50%    { transform: scale(1.15) rotate(6deg); filter: brightness(1.3); }
+}
+
+.semester-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.28);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 18px;
+  border-radius: 40px;
+  border: 1px solid rgba(255,255,255,0.40);
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+}
+
+/* ── Table Wrapper ── */
+.table-wrap {
+  background: rgba(255,255,255,0.22);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow:
+    0 12px 48px rgba(168,85,247,0.30),
+    0 2px 8px rgba(0,0,0,0.14),
+    inset 0 1px 0 rgba(255,255,255,0.50);
+  border: 1.5px solid rgba(255,255,255,0.35);
+  animation: slideUp 0.6s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes slideUp {
+  from { opacity:0; transform: translateY(28px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+table { width: 100%; border-collapse: collapse; }
+
+/* ── Table Header ── */
+thead th {
+  padding: 15px 10px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #fff;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(192,38,211,0.80), rgba(124,58,237,0.80));
+  border-bottom: 1.5px solid rgba(255,255,255,0.18);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+thead th:first-child {
+  width: 120px;
+  background: linear-gradient(135deg, rgba(162,28,175,0.85), rgba(100,40,200,0.85));
+}
+
+/* ── Body Rows ── */
+tbody tr { transition: background 0.18s; }
+tbody tr:hover { background: rgba(255,255,255,0.14); }
+
+td {
+  padding: 12px 8px;
+  text-align: center;
+  vertical-align: middle;
+  border: 1px solid rgba(255,255,255,0.15);
+  font-size: 13px;
+}
+
+/* ── Time Column ── */
+.time-cell {
+  background: rgba(255,255,255,0.12);
+  border-right: 2px solid rgba(255,255,255,0.22) !important;
+  cursor: default;
+}
+.period-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 3px;
+  letter-spacing: 0.5px;
+}
+.period-time {
+  display: block;
+  font-size: 10.5px;
+  color: rgba(255,255,255,0.55);
+}
+
+/* ── Course Cell Colors (8 vivid palettes) ── */
+.course-cell {
+  cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s, filter 0.18s;
+  border-radius: 2px;
+  padding: 10px 6px;
+  position: relative;
+}
+.course-cell:hover {
+  transform: scale(1.04);
+  filter: brightness(1.08);
+  z-index: 2;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+}
+/* 各色系 */
+.c-pink   { background: linear-gradient(135deg,#f9a8d4,#f472b6); }
+.c-purple { background: linear-gradient(135deg,#d8b4fe,#a855f7); }
+.c-indigo { background: linear-gradient(135deg,#a5b4fc,#6366f1); }
+.c-blue   { background: linear-gradient(135deg,#93c5fd,#3b82f6); }
+.c-teal   { background: linear-gradient(135deg,#6ee7b7,#10b981); }
+.c-orange { background: linear-gradient(135deg,#fcd34d,#f59e0b); }
+.c-red    { background: linear-gradient(135deg,#fca5a5,#ef4444); }
+.c-lime   { background: linear-gradient(135deg,#bef264,#84cc16); }
+
+.course-name {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 5px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.28);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.course-room {
+  display: inline-block;
+  font-size: 11px;
+  color: rgba(255,255,255,0.88);
+  background: rgba(0,0,0,0.18);
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+/* 编辑/删除按钮（悬停时显示） */
+.course-actions {
+  position: absolute;
+  top: 3px; right: 3px;
+  display: none;
+  gap: 3px;
+}
+.course-cell:hover .course-actions { display: flex; }
+.btn-action {
+  background: rgba(0,0,0,0.30);
+  border: none;
+  border-radius: 50%;
+  width: 20px; height: 20px;
+  font-size: 10px;
+  color: #fff;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+  padding: 0;
+}
+.btn-action:hover { background: rgba(0,0,0,0.55); }
+
+/* ── Empty Cell ── */
+.empty-cell {
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.empty-cell:hover {
+  background: rgba(255,255,255,0.18);
+}
+.add-hint {
+  font-size: 20px;
+  color: rgba(255,255,255,0.25);
+  line-height: 1;
+  transition: color 0.18s, transform 0.18s;
+  display: block;
+}
+.empty-cell:hover .add-hint {
+  color: rgba(255,255,255,0.70);
+  transform: scale(1.3);
+}
+
+/* ── Early / Night Special Rows ── */
+.row-early .time-cell { background: linear-gradient(135deg,rgba(253,186,116,0.25),rgba(251,146,60,0.15)); }
+.row-early .period-label { color: #fde68a; }
+.row-early .period-time  { color: rgba(253,230,138,0.55); }
+.row-night .time-cell { background: linear-gradient(135deg,rgba(165,180,252,0.22),rgba(139,92,246,0.14)); }
+.row-night .period-label { color: #c4b5fd; }
+.row-night .period-time  { color: rgba(196,181,253,0.55); }
+
+/* ── Divider Row ── */
+.divider-row td {
+  padding: 6px 12px;
+  background: rgba(255,255,255,0.07);
+  border-top: 1px dashed rgba(255,255,255,0.20);
+  border-bottom: 1px dashed rgba(255,255,255,0.20);
+}
+.divider-label {
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.42);
+  letter-spacing: 1.5px;
+}
+
+/* ── Footer ── */
+.footer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 22px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+}
+.footer strong { color: rgba(255,255,255,0.92); font-weight: 700; }
+.dot { color: rgba(255,255,255,0.28); }
+
+/* ── Modal Overlay ── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.modal {
+  background: linear-gradient(145deg, #2d1b5e, #1e1040);
+  border: 1.5px solid rgba(200,140,255,0.35);
+  border-radius: 20px;
+  padding: 28px 28px 24px;
+  width: 340px;
+  max-width: 94vw;
+  box-shadow: 0 20px 60px rgba(120,60,220,0.45);
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
+}
+.modal-overlay.open .modal {
+  transform: scale(1) translateY(0);
+}
+.modal h2 {
+  font-size: 17px; font-weight: 700;
+  color: #e9d5ff; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 8px;
+}
+.modal label {
+  display: block;
+  font-size: 12px; font-weight: 600;
+  color: rgba(209,196,255,0.75);
+  margin-bottom: 5px; letter-spacing: 0.5px;
+}
+.modal input, .modal select {
+  width: 100%;
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(200,140,255,0.30);
+  border-radius: 10px;
+  padding: 9px 12px;
+  color: #fff; font-size: 14px;
+  margin-bottom: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+}
+.modal input::placeholder { color: rgba(255,255,255,0.28); }
+.modal input:focus, .modal select:focus {
+  border-color: rgba(200,140,255,0.70);
+  box-shadow: 0 0 0 3px rgba(168,85,247,0.20);
+}
+.modal select option { background: #2d1b5e; color: #fff; }
+
+/* 颜色选择器 */
+.color-picker {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.color-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2.5px solid transparent;
+  transition: transform 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.color-dot:hover, .color-dot.selected { transform: scale(1.2); border-color: #fff; }
+
+/* 按钮组 */
+.modal-btns {
+  display: flex; gap: 10px; margin-top: 4px;
+}
+.btn-cancel {
+  flex: 1; padding: 9px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 10px; color: rgba(255,255,255,0.75);
+  font-size: 14px; cursor: pointer;
+  transition: background 0.18s;
+  font-family: inherit;
+}
+.btn-cancel:hover { background: rgba(255,255,255,0.18); }
+.btn-save {
+  flex: 2; padding: 9px;
+  background: linear-gradient(135deg,#c026d3,#7c3aed);
+  border: none; border-radius: 10px;
+  color: #fff; font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(192,38,211,0.45);
+  transition: filter 0.18s, transform 0.15s;
+  font-family: inherit;
+}
+.btn-save:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+/* 删除按钮 */
+.btn-delete {
+  padding: 9px 14px;
+  background: rgba(239,68,68,0.18);
+  border: 1px solid rgba(239,68,68,0.35);
+  border-radius: 10px; color: #fca5a5;
+  font-size: 13px; cursor: pointer;
+  transition: background 0.18s;
+  font-family: inherit;
+}
+.btn-delete:hover { background: rgba(239,68,68,0.35); }
+
+/* ── Welcome Screen ── */
+#welcome-screen {
+  position: fixed;
+  inset: 0;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: pointer;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+#welcome-screen.hide {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+}
+.welcome-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  animation: wFadeIn 0.8s cubic-bezier(0.22,1,0.36,1) both;
+}
+@keyframes wFadeIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.welcome-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+}
+.welcome-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #f472b6 0%, #c084fc 50%, #818cf8 100%);
+  border-radius: 28px;
+  padding: 28px 48px 24px;
+  box-shadow:
+    0 12px 48px rgba(196,84,252,0.40),
+    0 2px 8px rgba(0,0,0,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.welcome-badge:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow:
+    0 16px 56px rgba(196,84,252,0.55),
+    0 2px 8px rgba(0,0,0,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+}
+.welcome-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, transparent 60%);
+  pointer-events: none;
+}
+.welcome-badge-icon {
+  font-size: 40px;
+  animation: sparkle 2.5s ease-in-out infinite;
+}
+.welcome-badge h1 {
+  font-size: 32px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 6px;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.28), 0 0 30px rgba(255,255,255,0.35);
+  position: relative;
+}
+.welcome-badge .card-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 2px;
+  font-weight: 500;
+}
+/* 作息时间卡片 */
+.welcome-routine {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #c084fc 100%);
+  border-radius: 28px;
+  padding: 28px 48px 24px;
+  box-shadow:
+    0 12px 48px rgba(99,102,241,0.40),
+    0 2px 8px rgba(0,0,0,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.welcome-routine:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow:
+    0 16px 56px rgba(99,102,241,0.55),
+    0 2px 8px rgba(0,0,0,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+}
+.welcome-routine::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, transparent 60%);
+  pointer-events: none;
+}
+.welcome-routine-icon {
+  font-size: 40px;
+  animation: sparkle 2.5s ease-in-out infinite;
+  animation-delay: -1.2s;
+}
+.welcome-routine h1 {
+  font-size: 32px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 6px;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.28), 0 0 30px rgba(255,255,255,0.35);
+  position: relative;
+}
+.welcome-routine .card-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 2px;
+  font-weight: 500;
+}
+.welcome-hint {
+  font-size: 15px;
+  color: #b0b8cc;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.welcome-hint-dot {
+  width: 7px; height: 7px;
+  background: #c084fc;
+  border-radius: 50%;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%     { opacity: 0.4; transform: scale(0.7); }
+}
+
+.routine-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: #1e1b4b;
+  letter-spacing: 4px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.routine-card {
+  background: linear-gradient(135deg, #f8b4d9 0%, #e879f9 25%, #a78bfa 55%, #60a5fa 100%);
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(168,85,247,0.25);
+}
+.routine-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.routine-table thead th {
+  padding: 14px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #fff;
+  text-align: center;
+  background: rgba(124,58,237,0.65);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+.routine-table thead th:first-child {
+  background: rgba(100,40,200,0.70);
+  width: 130px;
+}
+.routine-table tbody td {
+  padding: 13px 16px;
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.10);
+  font-weight: 500;
+}
+.routine-table tbody td:first-child {
+  font-weight: 700;
+  background: rgba(255,255,255,0.18);
+  font-size: 13px;
+}
+.routine-table .routine-divider td {
+  padding: 7px 16px;
+  background: rgba(255,255,255,0.06);
+  border-top: 1px dashed rgba(255,255,255,0.25);
+  border-bottom: 1px dashed rgba(255,255,255,0.25);
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 2px;
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed; bottom: 30px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: linear-gradient(135deg,#7c3aed,#c026d3);
+  color: #fff; font-size: 14px; font-weight: 600;
+  padding: 10px 24px; border-radius: 40px;
+  box-shadow: 0 6px 24px rgba(124,58,237,0.45);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 2000; white-space: nowrap;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- 欢迎屏 -->
+<div id="welcome-screen">
+  <div class="welcome-inner">
+    <div class="welcome-cards">
+      <div class="welcome-badge" id="btn-enter-schedule">
+        <span class="welcome-badge-icon">📚</span>
+        <h1>个人课表</h1>
+        <span class="card-label">点击进入</span>
+      </div>
+      <div class="welcome-routine" id="btn-enter-routine">
+        <span class="welcome-routine-icon">⏰</span>
+        <h1>作息时间</h1>
+        <span class="card-label">点击查看</span>
+      </div>
+    </div>
+    <div class="welcome-hint">
+      <span class="welcome-hint-dot"></span>
+      选择一个进入
+    </div>
+  </div>
+</div>
+
+<!-- 课表全屏页 -->
+<div class="page-overlay" id="schedule-page">
+  <div class="container">
+    <button class="page-back" id="btn-schedule-back">← 返回首页</button>
+
+    <!-- 标题区 -->
+    <div class="header-banner">
+      <div class="title-card">
+        <span class="title-icon">✨</span>
+        <h1>个人课表</h1>
+      </div>
+      <div>
+        <span class="semester-tag">📅 2025 – 2026 · 第二学期</span>
+      </div>
+    </div>
+
+    <!-- 课表主体 -->
+    <div class="table-wrap">
+      <table id="schedule-table">
+        <thead>
+          <tr>
+            <th>节次</th>
+            <th>周一</th>
+            <th>周二</th>
+            <th>周三</th>
+            <th>周四</th>
+            <th>周五</th>
+          </tr>
+        </thead>
+        <tbody id="schedule-body">
+          <!-- 由 JS 动态渲染 -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 底部统计 -->
+    <div class="footer" id="footer-stats">
+      <span>共 <strong id="stat-count">0</strong> 门课程</span>
+      <span class="dot">·</span>
+      <span>本周有课 <strong id="stat-days">0</strong> 天</span>
+      <span class="dot">·</span>
+      <span>点击空格 <strong>添加</strong> / 课程卡片 <strong>编辑</strong></span>
+    </div>
+  </div>
+</div>
+
+<!-- 作息时间表全屏页 -->
+<div class="page-overlay" id="routine-page">
+  <div class="routine-container">
+    <button class="page-back" id="btn-routine-back">← 返回首页</button>
+    <div class="routine-title">📋 作息时间表</div>
+    <div class="routine-card">
+      <table class="routine-table">
+        <thead>
+          <tr><th>时段</th><th>时间</th></tr>
+        </thead>
+        <tbody id="routine-body">
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 编辑 Modal -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h2 id="modal-title">✏️ 添加课程</h2>
+
+    <label>课程名称</label>
+    <input type="text" id="input-name" placeholder="例：高等数学" maxlength="16">
+
+    <label>教室 / 地点</label>
+    <input type="text" id="input-room" placeholder="例：A201" maxlength="12">
+
+    <label>选择颜色</label>
+    <div class="color-picker" id="color-picker"></div>
+
+    <div class="modal-btns">
+      <button class="btn-cancel" id="btn-cancel">取消</button>
+      <button class="btn-delete" id="btn-delete" style="display:none">🗑 删除</button>
+      <button class="btn-save"  id="btn-save">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast 提示 -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── 页面切换逻辑 ─────────────────────────────
+const welcomeScreen = document.getElementById('welcome-screen');
+const schedulePage  = document.getElementById('schedule-page');
+const routinePage   = document.getElementById('routine-page');
+
+// 点"个人课表" → 显示课表页
+document.getElementById('btn-enter-schedule').addEventListener('click', e => {
+  e.stopPropagation();
+  welcomeScreen.classList.add('hide');
+  schedulePage.classList.add('show');
+});
+
+// 点"作息时间" → 显示作息页
+document.getElementById('btn-enter-routine').addEventListener('click', e => {
+  e.stopPropagation();
+  welcomeScreen.classList.add('hide');
+  routinePage.classList.add('show');
+});
+
+// 课表页返回
+document.getElementById('btn-schedule-back').addEventListener('click', () => {
+  schedulePage.classList.remove('show');
+  schedulePage.classList.add('hide');
+  setTimeout(() => {
+    schedulePage.classList.remove('hide');
+    welcomeScreen.classList.remove('hide');
+    welcomeScreen.style.display = 'flex';
+  }, 600);
+});
+
+// 作息页返回
+document.getElementById('btn-routine-back').addEventListener('click', () => {
+  routinePage.classList.remove('show');
+  routinePage.classList.add('hide');
+  setTimeout(() => {
+    routinePage.classList.remove('hide');
+    welcomeScreen.classList.remove('hide');
+    welcomeScreen.style.display = 'flex';
+  }, 600);
+});
+
+// ── 作息时间数据 ─────────────────────────────
+const ROUTINE = [
+  { label:'🔔 预备',    time:'07:55' },
+  { label:'📅 第 1 节', time:'08:05 – 08:50' },
+  { label:'📅 第 2 节', time:'08:50 – 09:35' },
+  { label:'📅 第 3 节', time:'09:45 – 10:30' },
+  { label:'📅 第 4 节', time:'10:40 – 11:25' },
+  { label:'📅 第 5 节', time:'11:25 – 12:10' },
+  { divider:'☀️ 午 休' },
+  { label:'🔔 预备',    time:'13:10' },
+  { label:'📅 第 6 节', time:'13:20 – 14:05' },
+  { label:'📅 第 7 节', time:'14:10 – 14:55' },
+  { label:'📅 第 8 节', time:'15:05 – 15:50' },
+  { label:'📅 第 9 节', time:'15:55 – 16:40' },
+  { divider:'🌙 晚 间' },
+  { label:'📅 第10节',  time:'18:00 – 18:45' },
+  { label:'📅 第11节',  time:'18:50 – 19:35' },
+  { label:'📅 第12节',  time:'19:40 – 20:25' },
+];
+
+function renderRoutine() {
+  const tbody = document.getElementById('routine-body');
+  tbody.innerHTML = '';
+  ROUTINE.forEach(item => {
+    const tr = document.createElement('tr');
+    if (item.divider) {
+      tr.className = 'routine-divider';
+      tr.innerHTML = `<td colspan="2">${item.divider}</td>`;
+    } else {
+      tr.innerHTML = `<td>${item.label}</td><td>${item.time}</td>`;
+    }
+    tbody.appendChild(tr);
+  });
+}
+renderRoutine();
+
+// ── 课程颜色配置 ──────────────────────────────────
+const COLORS = [
+  { cls:'c-pink',   bg:'linear-gradient(135deg,#f9a8d4,#f472b6)', dot:'#f472b6' },
+  { cls:'c-purple', bg:'linear-gradient(135deg,#d8b4fe,#a855f7)', dot:'#a855f7' },
+  { cls:'c-indigo', bg:'linear-gradient(135deg,#a5b4fc,#6366f1)', dot:'#6366f1' },
+  { cls:'c-blue',   bg:'linear-gradient(135deg,#93c5fd,#3b82f6)', dot:'#3b82f6' },
+  { cls:'c-teal',   bg:'linear-gradient(135deg,#6ee7b7,#10b981)', dot:'#10b981' },
+  { cls:'c-orange', bg:'linear-gradient(135deg,#fcd34d,#f59e0b)', dot:'#f59e0b' },
+  { cls:'c-red',    bg:'linear-gradient(135deg,#fca5a5,#ef4444)', dot:'#ef4444' },
+  { cls:'c-lime',   bg:'linear-gradient(135deg,#bef264,#84cc16)', dot:'#84cc16' },
+];
+
+// ── 时段配置 ──────────────────────────────────────
+const PERIODS = [
+  { id:'p1',   label:'第 1 节', time:'08:05 – 08:50', type:'normal' },
+  { id:'p2',   label:'第 2 节', time:'08:50 – 09:35', type:'normal' },
+  { id:'p3',   label:'第 3 节', time:'09:45 – 10:30', type:'normal' },
+  { id:'p4',   label:'第 4 节', time:'10:40 – 11:25', type:'normal' },
+  { id:'p5',   label:'第 5 节', time:'11:25 – 12:10', type:'normal' },
+  { id:'noon', label:null,      divider:'☀️ 午休',    type:'divider' },
+  { id:'p6',   label:'第 6 节', time:'13:20 – 14:05', type:'normal' },
+  { id:'p7',   label:'第 7 节', time:'14:10 – 14:55', type:'normal' },
+  { id:'p8',   label:'第 8 节', time:'15:05 – 15:50', type:'normal' },
+  { id:'p9',   label:'第 9 节', time:'15:55 – 16:40', type:'normal' },
+  { id:'eve',  label:null,      divider:'🌙 晚间',    type:'divider' },
+  { id:'p10',  label:'第10节',  time:'18:00 – 18:45', type:'night' },
+  { id:'p11',  label:'第11节',  time:'18:50 – 19:35', type:'night' },
+  { id:'p12',  label:'第12节',  time:'19:40 – 20:25', type:'night' },
+];
+const DAYS = ['mon','tue','wed','thu','fri'];
+const DAY_LABELS = ['周一','周二','周三','周四','周五'];
+
+// ── 数据存储（localStorage） ─────────────────────
+const STORE_KEY = 'schedule_v4';
+function loadData() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; }
+}
+function saveData(d) { localStorage.setItem(STORE_KEY, JSON.stringify(d)); }
+
+// 默认课程
+const DEFAULT = {
+  'p1_mon':{ name:'Web前端',      room:'A305', color:'c-indigo' },
+  'p1_tue':null,'p1_wed':null,'p1_thu':null,'p1_fri':null,
+  'p2_mon':null,
+  'p2_tue':null,
+  'p2_wed':{ name:'数据库',       room:'B202', color:'c-purple' },
+  'p2_thu':null,'p2_fri':null,
+  'p3_mon':null,'p3_tue':null,'p3_wed':null,
+  'p3_thu':{ name:'操作系统',     room:'B303', color:'c-orange' },
+  'p3_fri':null,
+  'p4_mon':null,
+  'p4_tue':{ name:'Java程序设计', room:'A406', color:'c-blue' },
+  'p4_wed':null,'p4_thu':null,
+  'p4_fri':{ name:'英语',         room:'C101', color:'c-teal' },
+  'p5_mon':{ name:'体育',         room:'操场',  color:'c-lime' },
+  'p5_tue':null,'p5_wed':null,'p5_thu':null,'p5_fri':null,
+  'p6_mon':null,'p6_tue':null,
+  'p6_wed':{ name:'计算机网络',   room:'A201', color:'c-pink' },
+  'p6_thu':null,'p6_fri':null,
+  'p7_mon':null,'p7_tue':null,'p7_wed':null,'p7_thu':null,
+  'p7_fri':{ name:'高数',         room:'B502', color:'c-red' },
+  'p8_mon':null,
+  'p8_tue':{ name:'软件工程',     room:'A505', color:'c-purple' },
+  'p8_wed':null,
+  'p8_thu':{ name:'Python',       room:'B404', color:'c-teal' },
+  'p8_fri':null,
+  'p9_mon':null,'p9_tue':null,'p9_wed':null,'p9_thu':null,'p9_fri':null,
+  'p10_mon':null,'p10_tue':null,'p10_wed':null,'p10_thu':null,'p10_fri':null,
+  'p11_mon':null,'p11_tue':null,'p11_wed':null,'p11_thu':null,'p11_fri':null,
+  'p12_mon':null,'p12_tue':null,'p12_wed':null,'p12_thu':null,'p12_fri':null,
+};
+
+let data = loadData();
+if (!Object.keys(data).length) { data = { ...DEFAULT }; saveData(data); }
+
+// ── 渲染表格 ──────────────────────────────────────
+function render() {
+  const tbody = document.getElementById('schedule-body');
+  tbody.innerHTML = '';
+
+  PERIODS.forEach(period => {
+    const tr = document.createElement('tr');
+
+    if (period.type === 'divider') {
+      tr.className = 'divider-row';
+      tr.innerHTML = `<td colspan="6"><span class="divider-label">${period.divider}</span></td>`;
+      tbody.appendChild(tr);
+      return;
+    }
+
+    if (period.type === 'early')  tr.className = 'row-early';
+    if (period.type === 'night')  tr.className = 'row-night';
+
+    // 时间格子
+    const tdTime = document.createElement('td');
+    tdTime.className = 'time-cell';
+    tdTime.innerHTML = `<span class="period-label">${period.label}</span><span class="period-time">${period.time}</span>`;
+    tr.appendChild(tdTime);
+
+    // 各天格子
+    DAYS.forEach(day => {
+      const key = `${period.id}_${day}`;
+      const course = data[key];
+      const td = document.createElement('td');
+
+      if (course) {
+        td.className = `course-cell ${course.color}`;
+        td.innerHTML = `
+          <span class="course-name">${escHtml(course.name)}</span>
+          <span class="course-room">${escHtml(course.room)}</span>
+          <div class="course-actions">
+            <button class="btn-action" title="编辑" data-key="${key}" data-act="edit">✏️</button>
+          </div>`;
+        td.addEventListener('click', e => {
+          if (e.target.closest('.btn-action')) return;
+          openModal(key);
+        });
+      } else {
+        td.className = 'empty-cell';
+        td.innerHTML = `<span class="add-hint">＋</span>`;
+        td.addEventListener('click', () => openModal(key));
+      }
+
+      tr.appendChild(td);
+    });
+
+    tbody.appendChild(tr);
+  });
+
+  // 事件委托：编辑按钮
+  tbody.querySelectorAll('[data-act="edit"]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      openModal(btn.dataset.key);
+    });
+  });
+
+  updateStats();
+}
+
+// ── 统计 ─────────────────────────────────────────
+function updateStats() {
+  const courses = Object.values(data).filter(Boolean);
+  document.getElementById('stat-count').textContent = courses.length;
+  const activeDays = new Set(
+    Object.entries(data)
+      .filter(([,v]) => v)
+      .map(([k]) => k.split('_')[1])
+  ).size;
+  document.getElementById('stat-days').textContent = activeDays;
+}
+
+// ── Modal 状态 ────────────────────────────────────
+let currentKey = null;
+let selectedColor = COLORS[0].cls;
+
+function openModal(key) {
+  currentKey = key;
+  const course = data[key];
+  const overlay = document.getElementById('modal-overlay');
+  const isEdit = !!course;
+
+  document.getElementById('modal-title').textContent = isEdit ? '✏️ 编辑课程' : '✨ 添加课程';
+  document.getElementById('input-name').value = course ? course.name : '';
+  document.getElementById('input-room').value = course ? course.room : '';
+  document.getElementById('btn-delete').style.display = isEdit ? 'block' : 'none';
+  selectedColor = course ? course.color : COLORS[0].cls;
+
+  renderColorPicker();
+  overlay.classList.add('open');
+  setTimeout(() => document.getElementById('input-name').focus(), 80);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function renderColorPicker() {
+  const container = document.getElementById('color-picker');
+  container.innerHTML = '';
+  COLORS.forEach(c => {
+    const dot = document.createElement('div');
+    dot.className = 'color-dot' + (c.cls === selectedColor ? ' selected' : '');
+    dot.style.background = c.dot;
+    dot.title = c.cls;
+    dot.addEventListener('click', () => {
+      selectedColor = c.cls;
+      container.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+      dot.classList.add('selected');
+    });
+    container.appendChild(dot);
+  });
+}
+
+document.getElementById('btn-save').addEventListener('click', () => {
+  const name = document.getElementById('input-name').value.trim();
+  const room = document.getElementById('input-room').value.trim();
+  if (!name) { showToast('⚠️ 请输入课程名称'); return; }
+  data[currentKey] = { name, room: room || '—', color: selectedColor };
+  saveData(data);
+  render();
+  closeModal();
+  showToast('✅ 课程已保存');
+});
+
+document.getElementById('btn-delete').addEventListener('click', () => {
+  data[currentKey] = null;
+  saveData(data);
+  render();
+  closeModal();
+  showToast('🗑️ 课程已删除');
+});
+
+document.getElementById('btn-cancel').addEventListener('click', closeModal);
+
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+
+// Enter 保存
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.getElementById('modal-overlay').classList.contains('open')) {
+    document.getElementById('btn-save').click();
+  }
+  if (e.key === 'Escape') closeModal();
+});
+
+// ── Toast ─────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ── 工具 ─────────────────────────────────────────
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── 初始化 ────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
